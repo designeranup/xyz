@@ -128,11 +128,6 @@
         // Required, Label value
         const Name = "Name";
         // Required
-        // Optional - new fields
-        const Option1 = "Option1"; 
-        // Optional - example field 1
-        const Option2 = "Option2"; 
-        // Optional - example field 2
         const Longitude = "Longitude";
         // Required
         const Latitude = "Latitude";
@@ -305,9 +300,7 @@
         function getInfo(rec) {
           const result = {
             id: rec.id,
-            : parseValue(rec[]),
-            opt1: parseValue([Option1]),
-            opt2: parseValue([Option2]),
+            name: parseValue(rec[Name]),
             lng: parseValue(rec[Longitude]),
             lat: parseValue(rec[Latitude])
           };
@@ -397,13 +390,13 @@
             points.push(pt);
 
             const marker = L.marker(pt, {
-              title: name, opt1, opt2,
+              title: name,
               id: id,
               icon: (id == selectedRowId) ?  selectedIcon    :  defaultIcon,
               pane: (id == selectedRowId) ? "selectedMarker" : "otherMarkers",
             });
 
-            marker.bindPopup(name, opt1, opt2);
+            marker.bindPopup(name);
             markers.addLayer(marker);
 
             popups[id] = marker;
@@ -472,8 +465,6 @@
             return {
               [Longitude]: Longitude,
               [Name]: Name,
-              [Option1]: Option1,
-              [Option2]: Option2,
               [Latitude]: Latitude,
               [Address]: hasCol(Address, record) ? Address : null,
               [GeocodedAddress]: hasCol(GeocodedAddress, record) ? GeocodedAddress : null,
@@ -566,9 +557,7 @@
         grist.ready({
           columns: [
             "Name",
-            "Option1",
-            "Option2",
-            { name: "Longitude", type: 'Numeric'},
+            { name: "Longitude", type: 'Numeric'} ,
             { name: "Latitude", type: 'Numeric'},
             { name: "Geocode", type: 'Bool', title: 'Geocode', optional},
             { name: "Address", type: 'Text', optional, optional},
