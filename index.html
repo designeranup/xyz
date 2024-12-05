@@ -158,13 +158,13 @@
         });
         const defaultIcon =  new L.Icon.Default();
 
-        // Create a function to get the selected popup content
+        // Popup content function
         function getPopupContent(record) {
             const name = record[Name];
-            const anotherOption1 = record[AnotherOption1] || "No data";
-            const anotherOption2 = record[AnotherOption2] || "No data";
             const latitude = record[Latitude];
             const longitude = record[Longitude];
+            const anotherOption1 = record[AnotherOption1] || "No data";
+            const anotherOption2 = record[AnotherOption2] || "No data";
 
             return `
                 <b>${name}</b><br>
