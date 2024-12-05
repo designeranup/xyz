@@ -305,7 +305,7 @@
         function getInfo(rec) {
           const result = {
             id: rec.id,
-            name: parseValue(rec[Name]),
+            : parseValue(rec[]),
             opt1: parseValue([Option1]),
             opt2: parseValue([Option2]),
             lng: parseValue(rec[Longitude]),
@@ -397,15 +397,20 @@
             points.push(pt);
 
             const marker = L.marker(pt, {
-              title: name, opt1, opt2,
+              title: name, 
+              opt1: opt1, 
+              opt2: opt2,
               id: id,
               icon: (id == selectedRowId) ?  selectedIcon    :  defaultIcon,
               pane: (id == selectedRowId) ? "selectedMarker" : "otherMarkers",
             });
 
-            marker.bindPopup(name, opt1, opt2);
+            marker.bindPopup(`
+                <strong>${name}</strong><br>
+                <strong>Option 1:</strong> ${opt1}<br>
+                <strong>Option 2:</strong> ${opt2}
+              `);
             markers.addLayer(marker);
-
             popups[id] = marker;
           }
           map.addLayer(markers);
