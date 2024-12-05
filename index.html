@@ -386,7 +386,7 @@
           });
 
           for (const rec of data) {
-            const {id, name, opt1, opt2, lng, lat} = getInfo(rec);
+            const {id, name, lng, lat} = getInfo(rec);
             // If the record is in the middle of geocoding, skip it.
             if (String(lng) === '...') { continue; }
             if (Math.abs(lat) < 0.01 && Math.abs(lng) < 0.01) {
