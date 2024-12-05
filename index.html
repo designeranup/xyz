@@ -306,6 +306,8 @@
           const result = {
             id: rec.id,
             name: parseValue(rec[Name]),
+            opt1: parseValue([Option1]),
+            opt2: parseValue([Option2]),
             lng: parseValue(rec[Longitude]),
             lat: parseValue(rec[Latitude])
           };
@@ -384,7 +386,7 @@
           });
 
           for (const rec of data) {
-            const {id, name, lng, lat} = getInfo(rec);
+            const {id, name, opt1, opt2, lng, lat} = getInfo(rec);
             // If the record is in the middle of geocoding, skip it.
             if (String(lng) === '...') { continue; }
             if (Math.abs(lat) < 0.01 && Math.abs(lng) < 0.01) {
@@ -395,13 +397,13 @@
             points.push(pt);
 
             const marker = L.marker(pt, {
-              title: name,
+              title: name, opt1, opt2,
               id: id,
               icon: (id == selectedRowId) ?  selectedIcon    :  defaultIcon,
               pane: (id == selectedRowId) ? "selectedMarker" : "otherMarkers",
             });
 
-            marker.bindPopup(name);
+            marker.bindPopup(name, opt1, opt2);
             markers.addLayer(marker);
 
             popups[id] = marker;
@@ -470,6 +472,8 @@
             return {
               [Longitude]: Longitude,
               [Name]: Name,
+              [Option1]: Option1,
+              [Option2]: Option2,
               [Latitude]: Latitude,
               [Address]: hasCol(Address, record) ? Address : null,
               [GeocodedAddress]: hasCol(GeocodedAddress, record) ? GeocodedAddress : null,
@@ -562,7 +566,9 @@
         grist.ready({
           columns: [
             "Name",
-            { name: "Longitude", type: 'Numeric'} ,
+            "Option1",
+            "Option2",
+            { name: "Longitude", type: 'Numeric'},
             { name: "Latitude", type: 'Numeric'},
             { name: "Geocode", type: 'Bool', title: 'Geocode', optional},
             { name: "Address", type: 'Text', optional, optional},
