@@ -386,29 +386,38 @@
           });
 
           for (const rec of data) {
-            const {id, name, lng, lat} = getInfo(rec);
-            // If the record is in the middle of geocoding, skip it.
-            if (String(lng) === '...') { continue; }
-            if (Math.abs(lat) < 0.01 && Math.abs(lng) < 0.01) {
-              // Stuff at 0,0 usually indicates bad imports/geocoding.
-              continue;
-            }
-            const pt = new L.LatLng(lat, lng);
-            points.push(pt);
+  const {id, name, opt1, opt2, lng, lat} = getInfo(rec);
+  
+  // Skip geocoding markers
+  if (String(lng) === '...') { continue; }
+  if (Math.abs(lat) < 0.01 && Math.abs(lng) < 0.01) {
+    // Skip invalid coordinates
+    continue;
+  }
 
-            const marker = L.marker(pt, {
-              title: name, 
-              opt1: opt1, 
-              opt2: opt2,
-              id: id,
-              icon: (id == selectedRowId) ?  selectedIcon    :  defaultIcon,
-              pane: (id == selectedRowId) ? "selectedMarker" : "otherMarkers",
-            });
+  const pt = new L.LatLng(lat, lng);
+  points.push(pt);
 
-            marker.bindPopup(name, opt1, opt2);
-            markers.addLayer(marker);
-            popups[id] = marker;
-          }
+  // Create marker for each record
+  const marker = L.marker(pt, {
+    title: name,
+    opt1: opt1,
+    opt2: opt2,
+    id: id,
+    icon: (id == selectedRowId) ?  selectedIcon :  defaultIcon,
+    pane: (id == selectedRowId) ? "selectedMarker" : "otherMarkers",
+  });
+
+  // Binding popup to display Name, Option1 and Option2
+  marker.bindPopup(`
+    <strong>${name}</strong><br>
+    <strong>Option 1:</strong> ${opt1}<br>
+    <strong>Option 2:</strong> ${opt2}
+  `);
+
+  markers.addLayer(marker);
+  popups[id] = marker;
+}
           map.addLayer(markers);
 
           clearMakers = () => map.removeLayer(markers);
