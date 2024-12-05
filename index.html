@@ -405,11 +405,7 @@
               pane: (id == selectedRowId) ? "selectedMarker" : "otherMarkers",
             });
 
-            marker.bindPopup(`
-                <strong>${name}</strong><br>
-                <strong>Option 1:</strong> ${opt1}<br>
-                <strong>Option 2:</strong> ${opt2}
-              `);
+            marker.bindPopup(name, opt1, opt2);
             markers.addLayer(marker);
             popups[id] = marker;
           }
