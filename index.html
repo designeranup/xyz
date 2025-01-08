@@ -128,14 +128,15 @@
         // Required, Label value
         const Name = "Name";
         // Required
-        // Optional - new fields
-        const Option1 = "Option1"; 
-        // Optional - example field 1
-        const Option2 = "Option2"; 
-        // Optional - example field 2
         const Longitude = "Longitude";
         // Required
         const Latitude = "Latitude";
+        // Species required
+        const Species = "Species";
+        // Optional - Individual code
+        const Individual_code = "Individual_code";
+        // Optional Trap type
+        const Trap_type = "Trap_type";
         // Optional - switch column to trigger geocoding
         const Geocode = 'Geocode';
         // Optional - but required for geocoding. Field with address to find (might be formula)
@@ -305,11 +306,13 @@
         function getInfo(rec) {
           const result = {
             id: rec.id,
-            : parseValue(rec[]),
-            opt1: parseValue([Option1]),
-            opt2: parseValue([Option2]),
+            individual_code: parseValue(rec[Individual_code]),
+            trap_type: parseValue(rec[Trap_type]),
+            name: parseValue(rec[Name]),
             lng: parseValue(rec[Longitude]),
-            lat: parseValue(rec[Latitude])
+            lat: parseValue(rec[Latitude]),
+            species: parseValue(rec[Species]) || "Unknown"
+
           };
           return result;
         }
@@ -326,8 +329,8 @@
             showProblem("No data found yet");
             return;
           }
-          if (!(Longitude in data[0] && Latitude in data[0] && Name in data[0])) {
-            showProblem("Table does not yet have all expected columns: Name, Longitude, Latitude. You can map custom columns"+
+          if (!(Longitude in data[0] && Latitude in data[0] && Name in data[0] && Species in data[0])) {
+            showProblem("Table does not yet have all expected columns: Name, Longitude, Latitude, Species. You can map custom columns"+
             " in the Creator Panel.");
             return;
           }
@@ -386,7 +389,7 @@
           });
 
           for (const rec of data) {
-            const {id, name, opt1, opt2, lng, lat} = getInfo(rec);
+            const {id, name, species, lng, lat, individual_code, trap_type} = getInfo(rec);
             // If the record is in the middle of geocoding, skip it.
             if (String(lng) === '...') { continue; }
             if (Math.abs(lat) < 0.01 && Math.abs(lng) < 0.01) {
@@ -397,13 +400,22 @@
             points.push(pt);
 
             const marker = L.marker(pt, {
-              title: name, opt1, opt2,
+              title: name,
+              species: species,
               id: id,
               icon: (id == selectedRowId) ?  selectedIcon    :  defaultIcon,
               pane: (id == selectedRowId) ? "selectedMarker" : "otherMarkers",
             });
 
-            marker.bindPopup(name, opt1, opt2);
+             const popupContent = `
+    <div>
+      <strong>Name:</strong> ${name}<br>
+      <strong>IC and TT:</strong> ${individual_code || "N/A"} & ${trap_type || "N/A"}<br>
+      <strong>Species:</strong> ${species || "Unknown"}<br>
+    </div>
+  `;
+
+            marker.bindPopup(popupContent);
             markers.addLayer(marker);
 
             popups[id] = marker;
@@ -471,9 +483,10 @@
           if (!mappings) {
             return {
               [Longitude]: Longitude,
+              [Species]: Species,
+              [Individual_code]: Individual_code,
+              [Trap_type]: Trap_type,
               [Name]: Name,
-              [Option1]: Option1,
-              [Option2]: Option2,
               [Latitude]: Latitude,
               [Address]: hasCol(Address, record) ? Address : null,
               [GeocodedAddress]: hasCol(GeocodedAddress, record) ? GeocodedAddress : null,
@@ -566,9 +579,10 @@
         grist.ready({
           columns: [
             "Name",
-            "Option1",
-            "Option2",
-            { name: "Longitude", type: 'Numeric'},
+            { name: "Species", type: 'Text'},
+            { name: "Individual_code", type: 'Text', optional},
+            { name: "Trap_type", type: 'Text', optional},
+            { name: "Longitude", type: 'Numeric'} ,
             { name: "Latitude", type: 'Numeric'},
             { name: "Geocode", type: 'Bool', title: 'Geocode', optional},
             { name: "Address", type: 'Text', optional, optional},
